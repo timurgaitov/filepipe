@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	pipe, err := os.OpenFile("pipe.txt", os.O_RDONLY, 0)
+	pipe, err := os.OpenFile("out.txt", os.O_RDONLY, 0)
 	if err != nil {
 		panic(err)
 	}
@@ -26,6 +26,6 @@ func main() {
 			}
 			panic(err)
 		}
-		fmt.Println(string(buf[:n]))
+		fmt.Print(string(buf[:n]))
 	}
 }

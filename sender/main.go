@@ -2,24 +2,34 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"os"
 	"time"
 )
 
 func main() {
-	pipe, err := os.OpenFile("pipe.txt", os.O_WRONLY, 0)
+	in, err := os.OpenFile("in.txt", os.O_RDONLY, 0)
 	if err != nil {
 		panic(err)
 	}
-	defer pipe.Close()
+	defer in.Close()
 
-	w := bufio.NewWriter(pipe)
-	r := bufio.NewReader(os.Stdin)
+	out, err := os.OpenFile("out.txt", os.O_WRONLY|os.O_APPEND, 0)
+	if err != nil {
+		panic(err)
+	}
+	defer out.Close()
 
+	r := bufio.NewReader(in)
+	w := bufio.NewWriter(out)
 	buf := make([]byte, 34*1024)
 	for {
 		n, err := r.Read(buf)
 		if err != nil {
+			if err == io.EOF {
+				time.Sleep(50 * time.Millisecond)
+				continue
+			}
 			panic(err)
 		}
 		_, err = w.Write(buf[:n])
@@ -30,6 +40,5 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		time.Sleep(50 * time.Millisecond)
 	}
 }
